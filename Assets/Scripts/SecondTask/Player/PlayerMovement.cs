@@ -5,12 +5,19 @@ using UnityEngine.Serialization;
 
 namespace SecondTask.Player
 {
-    [RequireComponent(typeof(Rigidbody2D)), RequireComponent(typeof(Animator))]
+    [RequireComponent(
+         typeof(SpriteRenderer), 
+         typeof(Rigidbody2D), 
+         typeof(Animator))]
     public class PlayerMovement: MonoBehaviour
     {
         private static readonly int HorizontalMovement = Animator.StringToHash("HorizontalMovement");
+        private static readonly int VerticalMovement = Animator.StringToHash("VerticalMovement");
+        private static readonly int Jumped = Animator.StringToHash("Jumped");
 
-        private Transform _transform;
+        private const float Eps = 2f;
+
+        private SpriteRenderer _renderer;
         private Rigidbody2D _rigidbody;
         private Animator _animator;
 
@@ -21,15 +28,17 @@ namespace SecondTask.Player
         [SerializeField] private float speed;
 
         [SerializeField] private float jumpTiles;
+        
         private bool _jumped;
         
         private readonly Vector2[] _velocities = {Vector2.zero, Vector2.zero};
         
+
         private Vector2 _velocity => _velocities[0];
 
         private void Start()
         {
-            _transform = GetComponent<Transform>();
+            _renderer = GetComponent<SpriteRenderer>();
             _rigidbody = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
         }
@@ -53,6 +62,8 @@ namespace SecondTask.Player
             }
 
             _velocities[0] = _velocities[1];
+            
+            _animator.SetFloat(VerticalMovement, _rigidbody.velocity.y);
         }
 
         private void FixedUpdate()
@@ -62,7 +73,16 @@ namespace SecondTask.Player
             if (_jumped)
             {
                 Jump();
+                _animator.SetBool(Jumped, true);
                 _jumped = false;
+            }
+        }
+
+        private void OnCollisionEnter2D(Collision2D col)
+        {
+            if (Mathf.Abs(_rigidbody.velocity.y) < Eps)
+            {
+                _animator.SetBool(Jumped, false);
             }
         }
 
@@ -70,17 +90,9 @@ namespace SecondTask.Player
         {
             var y = _rigidbody.velocity.y;
             _rigidbody.velocity = new Vector2(direction * speed, y);
-            
-            var rotation = _transform.localRotation;
-            rotation.y = direction switch
-            {
-                < 0 => 180f,
-                > 0 => 0f,
-                _ => rotation.y
-            };
-            
-            _transform.localRotation = rotation;
-            
+
+            _renderer.flipX = direction < 0;
+
             _animator.SetBool(HorizontalMovement, direction != 0);
         }
 
@@ -95,11 +107,16 @@ namespace SecondTask.Player
 
     internal abstract class PlayerState
     {
-        private PlayerMovement _playerMovement;
-
-        protected PlayerState(PlayerMovement playerMovement)
+        private Animator _animator;
+        private Rigidbody2D _rigidbody;
+        private Renderer _renderer;
+        
+        private PlayerMovement _movement;
+        
+        
+        protected PlayerState(PlayerMovement movement)
         {
-            _playerMovement = playerMovement;
+            _movement = movement;
         }
         
         public abstract void Update();
@@ -107,7 +124,7 @@ namespace SecondTask.Player
 
     internal class WalkState : PlayerState
     {
-        public WalkState(PlayerMovement playerMovement): base(playerMovement) {}
+        public WalkState(PlayerMovement movement): base(movement) {}
 
         public override void Update()
         {
@@ -117,7 +134,7 @@ namespace SecondTask.Player
 
     internal class JumpState: PlayerState
     {
-        public JumpState(PlayerMovement playerMovement): base(playerMovement) {}
+        public JumpState(PlayerMovement movement): base(movement) {}
         
         public override void Update()
         {
