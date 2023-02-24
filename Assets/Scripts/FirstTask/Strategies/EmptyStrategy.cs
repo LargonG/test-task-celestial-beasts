@@ -1,4 +1,4 @@
-namespace TaskOne.Strategies
+namespace FirstTask.Strategies
 {
     public class EmptyStrategy: IStrategy
     {

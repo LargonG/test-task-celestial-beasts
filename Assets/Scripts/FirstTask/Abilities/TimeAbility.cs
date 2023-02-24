@@ -1,7 +1,6 @@
-using TaskOne.Characteristics;
 using UnityEngine;
 
-namespace TaskOne.Abilities
+namespace FirstTask.Abilities
 {
     public abstract class TimeAbility: Ability
     {

@@ -1,8 +1,7 @@
-using System;
-using TaskOne.Characteristics;
+using FirstTask.Characteristics;
 using Random = Unity.Mathematics.Random;
 
-namespace TaskOne.Strategies
+namespace FirstTask.Strategies
 {
     public class RandomAttackStrategy: IStrategy
     {

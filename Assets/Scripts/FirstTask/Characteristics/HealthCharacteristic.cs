@@ -1,6 +1,6 @@
-namespace TaskOne.Characteristics
+namespace FirstTask.Characteristics
 {
-    public class HealthCharacteristic: ICharacteristic
+    public class HealthCharacteristic: Characteristic
     {
         private readonly float[] _value = new float[2];
         public float Value => _value[0];

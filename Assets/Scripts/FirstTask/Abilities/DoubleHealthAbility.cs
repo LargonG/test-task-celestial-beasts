@@ -1,4 +1,4 @@
-namespace TaskOne.Abilities
+namespace FirstTask.Abilities
 {
     public class DoubleHealthAbility: TimeAbility
     {

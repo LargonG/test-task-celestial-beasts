@@ -1,57 +1,107 @@
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SecondTask.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerMovement: MonoBehaviour
     {
-        private Rigidbody2D _rigidbody2D;
+        private Rigidbody2D _rigidbody;
 
-        [SerializeField] private KeyCode right;
-        [SerializeField] private KeyCode left;
-        [SerializeField] private KeyCode jump;
+        [SerializeField] private KeyCode leftKey;
+        [SerializeField] private KeyCode rightKey;
+        [SerializeField] private KeyCode jumpKey;
 
         [SerializeField] private float speed;
-        [SerializeField] private float jumpVelocity;
+
+        [SerializeField] private float jumpTiles;
+        private bool _jumped;
+        
+        private readonly Vector2[] _velocities = {Vector2.zero, Vector2.zero};
+        private Vector2 _velocity => _velocities[0];
 
         private void Start()
         {
-            _rigidbody2D = GetComponent<Rigidbody2D>();
+            _rigidbody = GetComponent<Rigidbody2D>();
         }
 
-        public void FixedUpdate()
+        private void Update()
         {
-            var velocity = new Vector2(0, 0);
+            _velocities[1] = Vector2.zero;
+
+            if (Input.GetKey(leftKey))
+            {
+                _velocities[1] += Vector2.left;
+            }
+            else if (Input.GetKey(rightKey))
+            {
+                _velocities[1] += Vector2.right;
+            }
+
+            if (Input.GetKeyDown(jumpKey))
+            {
+                _jumped = true;
+            }
+
+            _velocities[0] = _velocities[1];
+        }
+
+        private void FixedUpdate()
+        {
+            MoveHorizontal(_velocity.x);
             
-            if (Input.GetKey(right))
+            if (_jumped)
             {
-                velocity += Vector2.right;
+                Jump();
+                _jumped = false;
             }
-
-            if (Input.GetKey(left))
-            {
-                velocity += Vector2.left;
-            }
-
-            if (Input.GetKey(jump))
-            {
-                velocity += Vector2.up;
-            }
-
-            MoveHorizontal(velocity.x * (speed * Time.deltaTime));
-            Jump(velocity.y * (jumpVelocity * Time.deltaTime));
         }
 
-        private void MoveHorizontal(float velocity)
+        private void MoveHorizontal(float direction)
         {
-            var oldVelocity = _rigidbody2D.velocity;
-            _rigidbody2D.velocity = new Vector2(velocity, oldVelocity.y);
+            var y = _rigidbody.velocity.y;
+            _rigidbody.velocity = new Vector2(direction * speed, y);
         }
 
-        private void Jump(float velocity)
+        private void Jump()
         {
-            var oldVelocity = _rigidbody2D.velocity;
-            _rigidbody2D.velocity = new Vector2(oldVelocity.x, velocity);
+            var x = _rigidbody.velocity.x;
+            var jumpVelocity = Mathf.Sqrt(
+                2 * jumpTiles * Mathf.Abs(Physics2D.gravity.y) * _rigidbody.gravityScale);
+            _rigidbody.velocity = new Vector2(x, jumpVelocity);
+        }
+    }
+
+    internal abstract class PlayerState
+    {
+        private PlayerMovement _playerMovement;
+
+        protected PlayerState(PlayerMovement playerMovement)
+        {
+            _playerMovement = playerMovement;
+        }
+        
+        public abstract void Update();
+    }
+
+    internal class WalkState : PlayerState
+    {
+        public WalkState(PlayerMovement playerMovement): base(playerMovement) {}
+
+        public override void Update()
+        {
+            
+        }
+    }
+
+    internal class JumpState: PlayerState
+    {
+        public JumpState(PlayerMovement playerMovement): base(playerMovement) {}
+        
+        public override void Update()
+        {
+            
         }
     }
 }

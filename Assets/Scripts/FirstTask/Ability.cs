@@ -1,5 +1,8 @@
-namespace TaskOne
+namespace FirstTask
 {
+    /**
+     * Способности солдата
+     */
     public abstract class Ability
     {
         protected bool Active;

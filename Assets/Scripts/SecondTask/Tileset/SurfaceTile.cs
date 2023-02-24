@@ -51,6 +51,7 @@ namespace SecondTask.Tileset
             }
 
             int index = GetSpriteIndex((byte)mask);
+            // Тут должно быть установление нового значения к тайлу
         }
 
         private bool HasSurfaceTile(ITilemap tilemap, Vector3Int position) => tilemap.GetTile(position) == this;
@@ -59,8 +60,12 @@ namespace SecondTask.Tileset
         {
             // It's hard to think...
             // So do this now on my own
+            // Для хорошей тайловой сетки потребуется что-то порядка 256 разных спрайтов,
+            // Но вообще, если ограничится только 4-я соседями, то нужно будет всего 16 спрайтов, вот
+            // Думать не хочется, поэтому я не стал дореализовывать этот класс
             return 0;
         }
+        
 #if UNITY_EDITOR
         [MenuItem("Assets/Create/SurfaceTile")]
         public static void CreateSurfaceTile()

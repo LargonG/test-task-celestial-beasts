@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace TaskOne.Characteristics
+namespace FirstTask.Characteristics
 {
-    public class AttackCharacteristic: ICharacteristic
+    public class AttackCharacteristic: Characteristic
     {
         private readonly float _value;
         private readonly float _reload;

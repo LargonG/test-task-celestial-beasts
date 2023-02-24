@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TaskOne
+namespace FirstTask
 {
     [Serializable]
     public class Squad

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using TaskOne.Characteristics;
-using Unity.VisualScripting;
+using FirstTask.Characteristics;
 using UnityEngine;
 
-namespace TaskOne
+namespace FirstTask
 {
     [Serializable]
     public sealed class Soldier
@@ -20,17 +18,18 @@ namespace TaskOne
         // to do this I would change the type of this to Array, create for each component class special id,
         // and find component in array by it's id
         // I'm working here on this problem: https://github.com/LargonG/kote-engine
-        [SerializeField] private readonly Ability[] _abilities;
-        [SerializeField] private readonly ICharacteristic[] _characteristics;
+        [SerializeField] private List<Ability> _abilities;
+        [SerializeField] private List<Characteristic> _characteristics;
         [SerializeField] private readonly IStrategy _allianceStrategy;
         [SerializeField] private readonly IStrategy _enemyStrategy;
         
+        // минус multi-threading
         private Squad _alliance;
         private Squad _enemy;
 
         private readonly HealthCharacteristic _health;
 
-        public Soldier(ICharacteristic[] characteristics, Ability[] abilities,
+        public Soldier(List<Characteristic> characteristics, List<Ability> abilities,
             IStrategy allianceStrategy, IStrategy enemyStrategy)
         {
             _characteristics = characteristics;
@@ -43,12 +42,15 @@ namespace TaskOne
         
         public void Update(Squad ally, Squad enemy)
         {
+            _alliance = ally;
+            _enemy = enemy;
+            
             _allianceStrategy.Interact(this, ally);
             _enemyStrategy.Interact(this, enemy);
         }
 
         /// <summary>
-        /// This method is for double-buffering for characteristics & abilities
+        /// Нужен для double-buffering метода
         /// </summary>
         public void LateUpdate()
         {
@@ -63,11 +65,11 @@ namespace TaskOne
             }
         }
 
-        public T GetCharacteristic<T>() where T : class => FindOrNull<T, ICharacteristic>(_characteristics);
-        public T GetAbility<T>() where T : class => FindOrNull<T, Ability>(_abilities);
+        public T GetCharacteristic<T>() where T: Characteristic => FindOrNull<T, Characteristic>(_characteristics);
+        public T GetAbility<T>() where T : Ability => FindOrNull<T, Ability>(_abilities);
 
         private static TR FindOrNull<TR, T>(IEnumerable<T> collection)
-            where TR : class
+            where TR : class, T
             where T: class
         {
             foreach (var i in collection)
