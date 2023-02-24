@@ -16,7 +16,6 @@ namespace SecondTask.Player
         private static readonly int Jumped = Animator.StringToHash("Jumped");
 
         private readonly Vector2[] _velocities = {Vector2.zero, Vector2.zero};
-
         private Vector2 _velocity => _velocities[0];
         
         private const float Eps = 2f;
@@ -32,7 +31,7 @@ namespace SecondTask.Player
         [SerializeField] private float speed;
 
         [SerializeField] private float jumpTiles;
-        
+
         private bool _jumped;
 
         private void Start()
@@ -61,7 +60,7 @@ namespace SecondTask.Player
             }
 
             _velocities[0] = _velocities[1];
-            
+
             _animator.SetFloat(VerticalMovement, _rigidbody.velocity.y);
         }
 
@@ -84,8 +83,8 @@ namespace SecondTask.Player
                 _animator.SetBool(Jumped, false);
             }
         }
-
-        private void MoveHorizontal(float direction)
+        
+        public void MoveHorizontal(float direction)
         {
             var y = _rigidbody.velocity.y;
             _rigidbody.velocity = new Vector2(direction * speed, y);
@@ -95,49 +94,12 @@ namespace SecondTask.Player
             _animator.SetBool(HorizontalMovement, direction != 0);
         }
 
-        private void Jump()
+        public void Jump()
         {
             var x = _rigidbody.velocity.x;
             var jumpVelocity = Mathf.Sqrt(
                 2 * jumpTiles * Mathf.Abs(Physics2D.gravity.y) * _rigidbody.gravityScale);
             _rigidbody.velocity = new Vector2(x, jumpVelocity);
-        }
-    }
-
-    internal abstract class PlayerState
-    {
-        private Animator _animator;
-        private Rigidbody2D _rigidbody;
-        private Renderer _renderer;
-        
-        private PlayerMovement _movement;
-        
-        
-        protected PlayerState(PlayerMovement movement)
-        {
-            _movement = movement;
-        }
-        
-        public abstract void Update();
-    }
-
-    internal class WalkState : PlayerState
-    {
-        public WalkState(PlayerMovement movement): base(movement) {}
-
-        public override void Update()
-        {
-            
-        }
-    }
-
-    internal class JumpState: PlayerState
-    {
-        public JumpState(PlayerMovement movement): base(movement) {}
-        
-        public override void Update()
-        {
-            
         }
     }
 }

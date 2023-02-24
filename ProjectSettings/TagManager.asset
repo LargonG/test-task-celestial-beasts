@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Player
   - Platforms
-  - 
+  - Enemies
   - 
   - 
   - 
@@ -52,6 +52,9 @@ TagManager:
     locked: 0
   - name: Walls
     uniqueID: 3627132127
+    locked: 0
+  - name: Money
+    uniqueID: 2217001727
     locked: 0
   - name: Characters
     uniqueID: 2745308283
