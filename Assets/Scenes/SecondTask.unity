@@ -19410,7 +19410,7 @@ GameObject:
   - component: {fileID: 1844370079}
   - component: {fileID: 1844370082}
   m_Layer: 0
-  m_Name: bear-walk1
+  m_Name: Bear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19476,7 +19476,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1844370076}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.9, y: 4.9, z: 0}
+  m_LocalPosition: {x: 3.96, y: 4.23, z: 0}
   m_LocalScale: {x: 3.2641, y: 3.2641, z: 3.2641}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19498,7 +19498,7 @@ MonoBehaviour:
   firstWaypoint: {fileID: 1667731199}
   secondWaypoint: {fileID: 883940876}
   speed: 3
-  _moveRight: 1
+  moveRight: 0
 --- !u!50 &1844370080
 Rigidbody2D:
   serializedVersion: 4
