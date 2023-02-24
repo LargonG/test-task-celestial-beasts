@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
 
 namespace SecondTask.Enemy
 {
@@ -15,10 +10,10 @@ namespace SecondTask.Enemy
 
         [SerializeField] private float speed;
 
+        [SerializeField] private bool moveRight;
+        
         private SpriteRenderer _renderer;
         private Rigidbody2D _rigidbody;
-
-        [SerializeField] private bool _moveRight;
 
         private void Start()
         {
@@ -28,20 +23,23 @@ namespace SecondTask.Enemy
 
         private void FixedUpdate()
         {
-            if (_rigidbody.position.x <= firstWaypoint.position.x && !_moveRight ||
-                 secondWaypoint.position.x <= _rigidbody.position.x && _moveRight)
+            if (_rigidbody.position.x <= firstWaypoint.position.x && !moveRight ||
+                 secondWaypoint.position.x <= _rigidbody.position.x && moveRight)
             {
-                _moveRight = !_moveRight;
+                moveRight = !moveRight;
             }
+            // Вызывается каждый, потому что
+            // 1) Игрок может его сдвинуть
+            // 2) Изменение значения в runtime
             Move();
         }
 
         private void Move()
         {
             var velocity = _rigidbody.velocity;
-            velocity.x = (_moveRight ? Vector2.right.x : Vector2.left.x) * speed;
+            velocity.x = (moveRight ? Vector2.right.x : Vector2.left.x) * speed;
             
-            _renderer.flipX = !_moveRight;
+            _renderer.flipX = !moveRight;
             _rigidbody.velocity = velocity;
         }
     }

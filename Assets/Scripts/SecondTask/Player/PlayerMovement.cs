@@ -15,6 +15,10 @@ namespace SecondTask.Player
         private static readonly int VerticalMovement = Animator.StringToHash("VerticalMovement");
         private static readonly int Jumped = Animator.StringToHash("Jumped");
 
+        private readonly Vector2[] _velocities = {Vector2.zero, Vector2.zero};
+
+        private Vector2 _velocity => _velocities[0];
+        
         private const float Eps = 2f;
 
         private SpriteRenderer _renderer;
@@ -30,11 +34,6 @@ namespace SecondTask.Player
         [SerializeField] private float jumpTiles;
         
         private bool _jumped;
-        
-        private readonly Vector2[] _velocities = {Vector2.zero, Vector2.zero};
-        
-
-        private Vector2 _velocity => _velocities[0];
 
         private void Start()
         {
