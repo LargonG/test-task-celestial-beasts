@@ -1,21 +1,25 @@
+using System;
 using UnityEngine;
 
 namespace FirstTask
 {
-    public class Country: MonoBehaviour
+    public class Country
     {
-        [SerializeField] private Squad _squad;
+        private readonly Squad _squad;
 
-        [SerializeField] private Country enemy;
+        public Country(Squad squad)
+        {
+            _squad = squad;
+        }
 
-        private void Update()
+        public void Update(Country enemy)
         {
             _squad.Update(enemy._squad);
         }
 
-        private void LateUpdate()
+        public bool LateUpdate()
         {
-            _squad.LateUpdate();
+            return _squad.LateUpdate();
         }
     }
 }

@@ -1,10 +1,10 @@
 namespace FirstTask.Strategies
 {
-    public class EmptyStrategy: IStrategy
+    public class EmptyStrategy: Strategy
     {
-        public void Interact(Soldier soldier, Squad squad)
+        public override void Update(Soldier soldier)
         {
-            // Do nothing
+            // Do nothing...
         }
     }
 }

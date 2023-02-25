@@ -1,80 +1,65 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using FirstTask.Characteristics;
-using UnityEngine;
 
 namespace FirstTask
 {
-    [Serializable]
-    public sealed class Soldier
+    public class Soldier: ICloneable
     {
-        public bool IsAlive => _health.Value > 0;
+        public Squad Alliance;
+        public Squad Enemy;
         
-        // Use only in Update's methods (in methods that only Update uses)
-        internal Squad GetAllianceSquad() => _alliance;
-        internal Squad GetEnemySquad() => _enemy;
-        
-        // Maybe, some day we will want to add new ability or a component while running,
-        // to do this I would change the type of this to Array, create for each component class special id,
-        // and find component in array by it's id
-        // I'm working here on this problem: https://github.com/LargonG/kote-engine
-        [SerializeField] private List<Ability> _abilities;
-        [SerializeField] private List<Characteristic> _characteristics;
-        [SerializeField] private readonly IStrategy _allianceStrategy;
-        [SerializeField] private readonly IStrategy _enemyStrategy;
-        
-        // минус multi-threading
-        private Squad _alliance;
-        private Squad _enemy;
+        private List<Characteristic> _characteristics;
+        private List<Ability> _abilities;
 
-        private readonly HealthCharacteristic _health;
+        private Strategy _strategy;
 
-        public Soldier(List<Characteristic> characteristics, List<Ability> abilities,
-            IStrategy allianceStrategy, IStrategy enemyStrategy)
+        public HealthCharacteristic Health;
+
+        public Soldier(List<Characteristic> characteristics, List<Ability> abilities, Strategy strategy)
         {
             _characteristics = characteristics;
             _abilities = abilities;
-            _allianceStrategy = allianceStrategy;
-            _enemyStrategy = enemyStrategy;
-            
-            _health = GetCharacteristic<HealthCharacteristic>();
+            _strategy = strategy;
+
+            Health = GetCharacteristic<HealthCharacteristic>();
         }
-        
+
         public void Update(Squad ally, Squad enemy)
         {
-            _alliance = ally;
-            _enemy = enemy;
+            Alliance = ally;
+            Enemy = enemy;
             
-            _allianceStrategy.Interact(this, ally);
-            _enemyStrategy.Interact(this, enemy);
+            _strategy.Update(this);
+            _abilities.ForEach(it => it.Update());
         }
 
-        /// <summary>
-        /// Нужен для double-buffering метода
-        /// </summary>
         public void LateUpdate()
         {
-            foreach (var characteristic in _characteristics)
-            {
-                characteristic.SwapBuffer();
-            }
-
-            foreach (var ability in _abilities)
-            {
-                ability.LateUpdate();
-            }
+            _characteristics.ForEach(it => it.SwapBuffer());
+            _abilities.ForEach(it => it.LateUpdate());
         }
 
-        public T GetCharacteristic<T>() where T: Characteristic => FindOrNull<T, Characteristic>(_characteristics);
-        public T GetAbility<T>() where T : Ability => FindOrNull<T, Ability>(_abilities);
-
+        public T GetCharacteristicOrNull<T>() where T: Characteristic =>
+            FindOrNull<T, Characteristic>(_characteristics);
+        public T GetCharacteristic<T>() where T: Characteristic =>
+            Find<T, Characteristic>(_characteristics);
+        
+        public T GetAbilityOrNull<T>() where T : Ability =>
+            FindOrNull<T, Ability>(_abilities);
+        public T GetAbility<T>() where T : Ability =>
+            Find<T, Ability>(_abilities);
+        
+        
         private static TR FindOrNull<TR, T>(IEnumerable<T> collection)
             where TR : class, T
             where T: class
         {
-            foreach (var i in collection)
+            foreach (var obj in collection)
             {
-                if (i is TR res)
+                if (obj is TR res)
                 {
                     return res;
                 }
@@ -83,17 +68,22 @@ namespace FirstTask
             return null;
         }
 
-        private static TR Find<TR, T>(IEnumerable<T> collection) where TR : T
+        private static TR Find<TR, T>(IEnumerable<T> collection) where TR: T
         {
-            foreach (var i in collection)
+            foreach (var obj in collection)
             {
-                if (i is TR res)
+                if (obj is TR res)
                 {
                     return res;
                 }
             }
 
-            throw new InvalidOperationException($"{typeof(T)} was not found");
+            throw new InvalidOperationException($"Couldn't find object with type {typeof(T)}");
+        }
+
+        public object Clone()
+        {
+            return new Soldier(_characteristics, _abilities, _strategy);
         }
     }
 }
